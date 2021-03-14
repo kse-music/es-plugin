@@ -11,7 +11,7 @@ import org.apache.logging.log4j.spi.ExtendedLoggerWrapper;
 import java.util.WeakHashMap;
 
 public class PrefixPluginLogger extends ExtendedLoggerWrapper {
-    private static final WeakHashMap<String, Marker> markers = new WeakHashMap();
+    private static final WeakHashMap<String, Marker> markers = new WeakHashMap<>();
     private final Marker marker;
 
     static int markersSize() {

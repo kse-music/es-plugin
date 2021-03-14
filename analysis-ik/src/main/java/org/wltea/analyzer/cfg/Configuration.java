@@ -16,13 +16,13 @@ public class Configuration {
 	private final Settings settings;
 
 	//是否启用智能分词
-	private  boolean useSmart;
+	private boolean useSmart;
 
 	//是否启用远程词典加载
-	private boolean enableRemoteDict=false;
+	private final boolean enableRemoteDict;
 
 	//是否启用小写处理
-	private boolean enableLowercase=true;
+	private final boolean enableLowercase;
 
 
 	@Inject
@@ -30,26 +30,24 @@ public class Configuration {
 		this.environment = env;
 		this.settings=settings;
 
-		this.useSmart = settings.get("use_smart", "false").equals("true");
-		this.enableLowercase = settings.get("enable_lowercase", "true").equals("true");
-		this.enableRemoteDict = settings.get("enable_remote_dict", "true").equals("true");
+		this.useSmart = settings.getAsBoolean("use_smart", false);
+		this.enableLowercase = settings.getAsBoolean("enable_lowercase", true);
+        this.enableRemoteDict = settings.getAsBoolean("enable_remote_dict", true);
 
 		Dictionary.initial(this);
 
 	}
 
+
 	public Path getConfigInPluginDir() {
-		return PathUtils
-				.get(new File(AnalysisIkPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath())
-						.getParent(), "config")
-				.toAbsolutePath();
+		return PathUtils.get(new File(AnalysisIkPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent(), "config").toAbsolutePath();
 	}
 
 	public boolean isUseSmart() {
 		return useSmart;
 	}
 
-	public Configuration setUseSmart(boolean useSmart) {
+	public Configuration useSmart(boolean useSmart) {
 		this.useSmart = useSmart;
 		return this;
 	}

@@ -9,6 +9,10 @@ public class ESPluginLoggerFactory {
     private ESPluginLoggerFactory() {
     }
 
+    static public Logger getLogger(Class<?> clazz) {
+        return getLogger(clazz.getName());
+    }
+
     static public Logger getLogger(String name) {
         return getLogger("", LogManager.getLogger(name));
     }

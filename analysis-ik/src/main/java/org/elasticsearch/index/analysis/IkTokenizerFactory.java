@@ -24,7 +24,7 @@ public class IkTokenizerFactory extends AbstractTokenizerFactory {
     }
 
     public IkTokenizerFactory setSmart(boolean smart) {
-        this.configuration.setUseSmart(smart);
+        this.configuration.useSmart(smart);
         return this;
     }
 

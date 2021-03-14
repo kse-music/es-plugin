@@ -89,7 +89,8 @@ public class Monitor implements Runnable {
 				}
 			}else if (response.getStatusLine().getStatusCode()==304) {
 				//没有修改，不做操作
-				//noop
+                logger.debug("remote_ext_dict no change");
+                //noop
 			}else{
 				logger.info("remote_ext_dict {} return bad code {}" , location , response.getStatusLine().getStatusCode() );
 			}
