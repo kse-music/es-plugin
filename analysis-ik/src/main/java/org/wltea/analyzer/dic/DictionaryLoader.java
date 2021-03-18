@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 class DictionaryLoader {
 
     private static final Logger logger = ESPluginLoggerFactory.getLogger(DictionaryLoader.class);
+
     private static final RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(10 * 1000).setConnectTimeout(10 * 1000).setSocketTimeout(60 * 1000).build();
 
     DictSegment _MainDict;
@@ -122,10 +123,10 @@ class DictionaryLoader {
             // 建立监控线程
             for (String location : getDictFiles(REMOTE_EXT_DICT)) {
                 // 10 秒是初始延迟可以修改的 60是间隔时间 单位秒
-                pool.scheduleAtFixedRate(new Monitor(location), 10, 60, TimeUnit.SECONDS);
+                pool.scheduleAtFixedRate(new Monitor(getDicLocation(location)), 10, 60, TimeUnit.SECONDS);
             }
             for (String location : getDictFiles(REMOTE_EXT_STOP)) {
-                pool.scheduleAtFixedRate(new Monitor(location), 10, 60, TimeUnit.SECONDS);
+                pool.scheduleAtFixedRate(new Monitor(getDicLocation(location)), 10, 60, TimeUnit.SECONDS);
             }
         }
     }
@@ -143,8 +144,7 @@ class DictionaryLoader {
         // 加载扩展词典
         loadExtDict();
         // 加载远程自定义词库
-        loadRemoteExtDict();
-
+        loadRemoteDict(REMOTE_EXT_DICT,_MainDict);
     }
 
     /**
@@ -162,12 +162,12 @@ class DictionaryLoader {
     }
 
     /**
-     * 加载远程扩展词典到主词库表
+     * 加载远程词库表
      */
-    private void loadRemoteExtDict() {
-        List<String> remoteExtDictFiles = getDictFiles(REMOTE_EXT_DICT);
-        for (String location : remoteExtDictFiles) {
-            logger.info("[Dict Loading] " + location);
+    private void loadRemoteDict(String dictType,DictSegment dictSegment) {
+        List<String> remoteDictFiles = getDictFiles(dictType);
+        for (String location : remoteDictFiles) {
+            logger.info("[Dict Loading] {} dicPath={}" ,location,configuration.getCustomDictPath());
             List<String> lists = getRemoteWords(location);
             // 如果找不到扩展的字典，则忽略
             if (lists == null) {
@@ -177,8 +177,8 @@ class DictionaryLoader {
             for (String theWord : lists) {
                 if (theWord != null && !"".equals(theWord.trim())) {
                     // 加载扩展词典数据到主内存词典中
-                    logger.info(theWord);
-                    _MainDict.fillSegment(theWord.trim().toLowerCase().toCharArray());
+//                    logger.info(theWord);
+                    dictSegment.fillSegment(theWord.trim().toLowerCase().toCharArray());
                 }
             }
         }
@@ -199,30 +199,18 @@ class DictionaryLoader {
         List<String> extStopWordDictFiles = getDictFiles(EXT_STOP,true);
         for (String extStopWordDictName : extStopWordDictFiles) {
             logger.info("[Dict Loading] " + extStopWordDictName);
-
             // 读取扩展词典文件
             file = PathUtils.get(extStopWordDictName);
             loadDictFile(_StopWords, file, false, "Extra Stopwords");
         }
 
         // 加载远程停用词典
-        List<String> remoteExtStopWordDictFiles = getDictFiles(REMOTE_EXT_STOP);
-        for (String location : remoteExtStopWordDictFiles) {
-            logger.info("[Dict Loading] " + location);
-            List<String> lists = getRemoteWords(location);
-            // 如果找不到扩展的字典，则忽略
-            if (lists == null) {
-                logger.error("[Dict Loading] " + location + " load failed");
-                continue;
-            }
-            for (String theWord : lists) {
-                if (theWord != null && !"".equals(theWord.trim())) {
-                    // 加载远程词典数据到主内存中
-                    logger.info(theWord);
-                    _StopWords.fillSegment(theWord.trim().toLowerCase().toCharArray());
-                }
-            }
-        }
+        loadRemoteDict(REMOTE_EXT_STOP,_StopWords);
+
+    }
+
+    private String getDicLocation(String location){
+        return location+"?dicPath="+configuration.getCustomDictPath();
     }
 
     /**
@@ -233,7 +221,7 @@ class DictionaryLoader {
         return AccessController.doPrivileged((PrivilegedAction<List<String>>) () -> {
             List<String> buffer = new ArrayList<>();
 
-            sendGet(location,response -> {
+            sendGet(getDicLocation(location),response -> {
                 if (response.getStatusLine().getStatusCode() == 200) {
                     String charset = "UTF-8";
                     // 获取编码，默认为utf-8

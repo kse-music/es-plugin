@@ -58,8 +58,7 @@ public class Monitor implements Runnable {
 	public void runUnprivileged() {
 
 		//超时设置
-		RequestConfig rc = RequestConfig.custom().setConnectionRequestTimeout(10*1000)
-				.setConnectTimeout(10*1000).setSocketTimeout(15*1000).build();
+		RequestConfig rc = RequestConfig.custom().setConnectionRequestTimeout(10*1000).setConnectTimeout(10*1000).setSocketTimeout(15*1000).build();
 
 		HttpHead head = new HttpHead(location);
 		head.setConfig(rc);
