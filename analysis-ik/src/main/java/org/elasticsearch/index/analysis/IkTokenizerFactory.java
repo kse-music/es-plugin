@@ -8,6 +8,7 @@ import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.lucene.IKTokenizer;
 
 public class IkTokenizerFactory extends AbstractTokenizerFactory {
+
     private final Configuration configuration;
 
     public IkTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {

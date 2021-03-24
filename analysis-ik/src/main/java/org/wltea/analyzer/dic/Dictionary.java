@@ -2,7 +2,10 @@ package org.wltea.analyzer.dic;
 
 import org.wltea.analyzer.cfg.Configuration;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 词典管理类,单例模式
@@ -35,6 +38,7 @@ public class Dictionary {
 				}
 			}
 		}
+		singleton.dictionaryLoader.loadCustomDict(cfg.getCustomMainDictIdentify());
 	}
 
 	/**
@@ -53,15 +57,15 @@ public class Dictionary {
 	/**
 	 * 批量加载新词条
 	 * 
-	 * @param words
-	 *            Collection<String>词条列表
+	 * @param words  Collection<String>词条列表
 	 */
-	public void addWords(Collection<String> words) {
+	public void addWords(Collection<String> words,String identify) {
 		if (words != null) {
 			for (String word : words) {
 				if (word != null) {
 					// 批量加载词条到主内存词典中
-                    dictionaryLoader._MainDict.fillSegment(word.trim().toCharArray());
+					System.out.println(identify+" 中添加词 " + word);
+                    dictionaryLoader.getDictSegments(identify).getMainDict().fillSegment(word.trim().toCharArray());
 				}
 			}
 		}
@@ -70,12 +74,12 @@ public class Dictionary {
 	/**
 	 * 批量移除（屏蔽）词条
 	 */
-	public void disableWords(Collection<String> words) {
+	public void disableWords(Collection<String> words,String identify) {
 		if (words != null) {
 			for (String word : words) {
 				if (word != null) {
 					// 批量屏蔽词条
-                    dictionaryLoader._MainDict.disableSegment(word.trim().toCharArray());
+					dictionaryLoader.getDictSegments(identify).getMainDict().disableSegment(word.trim().toCharArray());
 				}
 			}
 		}
@@ -87,7 +91,7 @@ public class Dictionary {
 	 * @return Hit 匹配结果描述
 	 */
 	public Hit matchInMainDict(char[] charArray) {
-		return dictionaryLoader._MainDict.match(charArray);
+		return dictionaryLoader.globalDict.getMainDict().match(charArray);
 	}
 
 	/**
@@ -96,7 +100,15 @@ public class Dictionary {
 	 * @return Hit 匹配结果描述
 	 */
 	public Hit matchInMainDict(char[] charArray, int begin, int length) {
-		return dictionaryLoader._MainDict.match(charArray, begin, length);
+		return match(dictionaryLoader.globalDict.getMainDict(),charArray, begin, length);
+	}
+
+	public List<Hit> matchInMainDict(char[] charArray, int begin, int length, String identify) {
+		if(dictionaryLoader.getCustomDict().containsKey(identify)){
+			return Arrays.asList(matchInMainDict(charArray, begin, length)
+					,match(dictionaryLoader.getDictSegments(identify).getMainDict(),charArray, begin, length));
+		}
+		return Collections.singletonList(matchInMainDict(charArray, begin, length));
 	}
 
 	/**
@@ -105,7 +117,20 @@ public class Dictionary {
 	 * @return Hit 匹配结果描述
 	 */
 	public Hit matchInQuantifierDict(char[] charArray, int begin, int length) {
-		return dictionaryLoader._QuantifierDict.match(charArray, begin, length);
+		return match(dictionaryLoader.globalDict.getQuantifierDict(),charArray, begin, length);
+	}
+
+	public List<Hit> matchInQuantifierDict(char[] charArray, int begin, int length, String identify) {
+		if(dictionaryLoader.getCustomDict().containsKey(identify)){
+			return Arrays.asList(matchInQuantifierDict(charArray, begin, length)
+					,match(dictionaryLoader.getDictSegments(identify).getQuantifierDict(),charArray, begin, length));
+		}
+		return Collections.singletonList(matchInQuantifierDict(charArray, begin, length));
+
+	}
+
+	private Hit match(DictSegment dictSegment,char[] charArray, int begin, int length) {
+		return dictSegment.match(charArray, begin, length);
 	}
 
 	/**
@@ -123,12 +148,15 @@ public class Dictionary {
 	 * 
 	 * @return boolean
 	 */
-	public boolean isStopWord(char[] charArray, int begin, int length) {
-		return dictionaryLoader._StopWords.match(charArray, begin, length).isMatch();
+	public boolean isStopWord(char[] charArray, int begin, int length,String identify) {
+		if(dictionaryLoader.globalDict.getStopWords().match(charArray, begin, length).isMatch()){
+			return true;
+		}
+		return dictionaryLoader.getCustomDict().containsKey(identify) && dictionaryLoader.getDictSegments(identify).getStopWords().match(charArray, begin, length).isMatch();
 	}
 
-	public void reLoadMainDict(){
-        dictionaryLoader.reLoadDict();
+	public void reLoadMainDict(String identify){
+        dictionaryLoader.reLoadDict(identify);
     }
 
 }

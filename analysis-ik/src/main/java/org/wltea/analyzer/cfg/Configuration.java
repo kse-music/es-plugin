@@ -24,8 +24,7 @@ public class Configuration {
 	//是否启用小写处理
 	private final boolean enableLowercase;
 
-	private final String customDictPath;
-
+	private final String customMainDictIdentify;
 
 	@Inject
 	public Configuration(Environment env,Settings settings) {
@@ -35,7 +34,7 @@ public class Configuration {
 		this.useSmart = settings.getAsBoolean("use_smart", false);
 		this.enableLowercase = settings.getAsBoolean("enable_lowercase", true);
         this.enableRemoteDict = settings.getAsBoolean("enable_remote_dict", true);
-        this.customDictPath = settings.get("custom_dict_path", "default");
+        this.customMainDictIdentify = settings.get("custom_main_dict_identify", "default");
 
 		Dictionary.initial(this);
 
@@ -71,7 +70,8 @@ public class Configuration {
 		return enableLowercase;
 	}
 
-	public String getCustomDictPath() {
-		return customDictPath;
+	public String getCustomMainDictIdentify() {
+		return customMainDictIdentify;
 	}
+
 }

@@ -31,9 +31,11 @@ public class Monitor implements Runnable {
 	 * 请求地址
 	 */
 	private final String location;
+	private final String identify;
 
-	public Monitor(String location) {
+	public Monitor(String location,String identify) {
 		this.location = location;
+		this.identify = identify;
 		this.last_modified = null;
 		this.eTags = null;
 	}
@@ -60,7 +62,7 @@ public class Monitor implements Runnable {
 		//超时设置
 		RequestConfig rc = RequestConfig.custom().setConnectionRequestTimeout(10*1000).setConnectTimeout(10*1000).setSocketTimeout(15*1000).build();
 
-		HttpHead head = new HttpHead(location);
+		HttpHead head = new HttpHead(location+"?dicPath="+identify);
 		head.setConfig(rc);
 
 		//设置请求头
@@ -82,7 +84,7 @@ public class Monitor implements Runnable {
 						||((response.getLastHeader("ETag")!=null) && !response.getLastHeader("ETag").getValue().equalsIgnoreCase(eTags))) {
 
 					// 远程词库有更新,需要重新加载词典，并修改last_modified,eTags
-					Dictionary.getSingleton().reLoadMainDict();
+					Dictionary.getSingleton().reLoadMainDict(identify);
 					last_modified = response.getLastHeader("Last-Modified")==null?null:response.getLastHeader("Last-Modified").getValue();
 					eTags = response.getLastHeader("ETag")==null?null:response.getLastHeader("ETag").getValue();
 				}
