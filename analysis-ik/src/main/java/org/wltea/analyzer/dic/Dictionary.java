@@ -64,7 +64,6 @@ public class Dictionary {
 			for (String word : words) {
 				if (word != null) {
 					// 批量加载词条到主内存词典中
-					System.out.println(identify+" 中添加词 " + word);
                     dictionaryLoader.getDictSegments(identify).getMainDict().fillSegment(word.trim().toCharArray());
 				}
 			}
