@@ -9,7 +9,7 @@
     <version>1.0</version>
     <modules>
         <module>analysis-ik</module>
-        <module>ik</module>
+        <module>demo</module>
     </modules>
     <packaging>pom</packaging>
 
