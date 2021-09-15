@@ -14,7 +14,6 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <elasticsearch.version>7.14.0</elasticsearch.version>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml</elasticsearch.assembly.descriptor>
         <elasticsearch.plugin.name>demo</elasticsearch.plugin.name>
         <elasticsearch.plugin.classname>cn.hiboot.es.PrintPlugin</elasticsearch.plugin.classname>

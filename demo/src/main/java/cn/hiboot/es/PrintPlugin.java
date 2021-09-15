@@ -6,8 +6,7 @@ import org.elasticsearch.common.settings.ClusterSettings;
 import org.elasticsearch.common.settings.IndexScopedSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsFilter;
-import org.elasticsearch.plugins.ActionPlugin;
-import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.plugins.*;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 
@@ -21,7 +20,7 @@ import java.util.function.Supplier;
  * @author DingHao
  * @since 2021/8/26 16:03
  */
-public class PrintPlugin extends Plugin implements ActionPlugin {
+public class PrintPlugin extends Plugin implements ActionPlugin,AnalysisPlugin,ScriptPlugin,SearchPlugin{
 
     public PrintPlugin() {
         System.out.println("print Plugin initialize");

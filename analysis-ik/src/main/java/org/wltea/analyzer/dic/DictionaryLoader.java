@@ -11,7 +11,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.SpecialPermission;
 import org.elasticsearch.common.Strings;
-import org.elasticsearch.core.PathUtils;
+import org.elasticsearch.common.io.PathUtils;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.help.ESPluginLoggerFactory;
 
