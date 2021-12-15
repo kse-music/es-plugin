@@ -6,7 +6,7 @@
 
     <groupId>cn.hiboot</groupId>
     <artifactId>es-plugin</artifactId>
-    <version>1.0</version>
+    <version>${revision}</version>
     <modules>
         <module>analysis-ik</module>
         <module>demo</module>
@@ -21,9 +21,10 @@
     </parent>
 
     <properties>
+        <revision>7.16.1</revision>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <elasticsearch.version>7.13.4</elasticsearch.version>
+        <elasticsearch.version>${revision}</elasticsearch.version>
     </properties>
 
     <dependencies>

@@ -1,7 +1,7 @@
 package org.wltea.analyzer.dic;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.io.PathUtils;
+import org.elasticsearch.core.PathUtils;
 import org.elasticsearch.plugin.analysis.ik.AnalysisIkPlugin;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.help.ESPluginLoggerFactory;
