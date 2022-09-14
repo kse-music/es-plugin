@@ -10,6 +10,7 @@ import org.elasticsearch.plugins.*;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -22,7 +23,7 @@ import java.util.function.Supplier;
  */
 public class PrintPlugin extends Plugin implements ActionPlugin,AnalysisPlugin,ScriptPlugin,SearchPlugin{
 
-    public PrintPlugin() {
+    public PrintPlugin(Settings settings, Path configPath) {
         System.out.println("print Plugin initialize");
     }
 

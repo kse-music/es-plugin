@@ -1,11 +1,14 @@
 package cn.hiboot.es;
 
 import org.elasticsearch.client.node.NodeClient;
+import org.elasticsearch.common.bytes.BytesReference;
+import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.rest.BaseRestHandler;
 import org.elasticsearch.rest.BytesRestResponse;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentType;
 
 import java.io.IOException;
 import java.util.Date;
@@ -14,6 +17,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
+import static org.elasticsearch.rest.RestRequest.Method.POST;
 
 /**
  * describe about this class
@@ -23,11 +27,11 @@ import static org.elasticsearch.rest.RestRequest.Method.GET;
  */
 public class PrintPluginHandler extends BaseRestHandler {
 
-    private final String printName = "printPluginTest";
+    private final String printName = "printPlugin";
 
     @Override
     public List<Route> routes() {
-        return unmodifiableList(asList(new Route(GET, "print")));
+        return unmodifiableList(asList(new Route(GET, "print"),new Route(POST, "print")));
     }
 
     @Override
@@ -39,20 +43,17 @@ public class PrintPluginHandler extends BaseRestHandler {
      */
     @Override
     protected RestChannelConsumer prepareRequest(RestRequest request, NodeClient client) throws IOException {
-        // 接收的参数
-        System.out.println("params==" + request.params());
-
-        long t1 = System.currentTimeMillis();
-
+        BytesReference a = request.requiredContent();
+        XContentType b = request.getXContentType();
+        String json = XContentHelper.convertToJson(a, false,  b);
         String name = request.param("name");
 
-        long cost = System.currentTimeMillis() - t1;
         // 返回内容，这里返回消耗时间 请求参数 插件名称
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            builder.field("cost", cost);
             builder.field("name", name);
+            builder.field("json", json);
             builder.field("time", new Date());
             builder.field("pluginName",printName);
             builder.field("print","this is print plugin test");
