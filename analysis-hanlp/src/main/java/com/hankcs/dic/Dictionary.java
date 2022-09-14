@@ -35,11 +35,11 @@ public class Dictionary {
 
     private static final Logger logger = ESPluginLoggerFactory.getLogger(Dictionary.class.getName());
 
-    private static ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
 
     private Dictionary(Configuration configuration) {
-        Path configDir = configuration.getEnvironment().configFile().resolve(AnalysisHanLPPlugin.PLUGIN_NAME);
-//        Path configDir = configDir0.resolve("config");
+//        Path configDir = configuration.getEnvironment().configFile().resolve(AnalysisHanLPPlugin.PLUGIN_NAME);
+        Path configDir = configuration.getEnvironment().pluginsFile().resolve(AnalysisHanLPPlugin.PLUGIN_NAME).resolve("config");
         Predefine.HANLP_PROPERTIES_PATH = configDir.resolve(CONFIG_FILE_NAME).toString();
         logger.debug("hanlp properties path: {}", Predefine.HANLP_PROPERTIES_PATH);
         DictionaryFileCache.configCachePath(configuration);

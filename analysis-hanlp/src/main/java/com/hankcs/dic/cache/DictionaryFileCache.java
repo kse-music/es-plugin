@@ -32,7 +32,8 @@ public class DictionaryFileCache {
     private static List<DictionaryFile> customDictionaryFileList = new ArrayList<>();
 
     public static synchronized void configCachePath(Configuration configuration) {
-        cachePath = configuration.getEnvironment().pluginsFile().resolve(AnalysisHanLPPlugin.PLUGIN_NAME).resolve(DICTIONARY_FILE_CACHE_RECORD_FILE);
+//        cachePath = configuration.getEnvironment().pluginsFile().resolve(AnalysisHanLPPlugin.PLUGIN_NAME).resolve(DICTIONARY_FILE_CACHE_RECORD_FILE);
+        cachePath = configuration.getEnvironment().dataFiles()[0].resolve(AnalysisHanLPPlugin.PLUGIN_NAME).resolve(DICTIONARY_FILE_CACHE_RECORD_FILE);
     }
 
     public static void loadCache() {

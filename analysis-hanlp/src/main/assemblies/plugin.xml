@@ -8,28 +8,28 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/config</directory>
-            <outputDirectory>/config</outputDirectory>
+            <outputDirectory>config</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/data</directory>
-            <outputDirectory>/data</outputDirectory>
+            <outputDirectory>data</outputDirectory>
         </fileSet>
     </fileSets>
     <files>
         <file>
             <source>${project.basedir}/src/main/resources/plugin-descriptor.properties</source>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory/>
             <filtered>true</filtered>
         </file>
         <file>
             <source>${project.basedir}/src/main/resources/plugin-security.policy</source>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory/>
             <filtered>true</filtered>
         </file>
     </files>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory/>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <excludes>
@@ -37,7 +37,7 @@
             </excludes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory/>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
@@ -51,7 +51,7 @@
             </excludes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory/>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
@@ -63,7 +63,7 @@
             </excludes>
         </dependencySet>
         <dependencySet>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory/>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
