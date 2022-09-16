@@ -56,26 +56,34 @@ public class Dictionary {
 	 * 
 	 * @param words  Collection<String>词条列表
 	 */
-	public void addWords(Collection<String> words,String identify) {
+	public void addWords(Collection<String> words,String identify,String type) {
 		if (words != null) {
+			DictSegment dict = getDictType(identify, type);
 			for (String word : words) {
 				if (word != null) {
-					// 批量加载词条到主内存词典中
-                    dictionaryLoader.getDictSegments(identify).getMainDict().fillSegment(word.trim().toCharArray());
+					dict.fillSegment(word.trim().toCharArray());
 				}
 			}
 		}
 	}
 
+	private DictSegment getDictType(String identify,String type){
+		DictSegment dict = dictionaryLoader.getDictSegments(identify).getMainDict();
+		if("stop".equals(type)){
+			dict = dictionaryLoader.getDictSegments(identify).getStopWords();
+		}
+		return dict;
+	}
+
 	/**
 	 * 批量移除（屏蔽）词条
 	 */
-	public void disableWords(Collection<String> words,String identify) {
+	public void disableWords(Collection<String> words,String identify,String type) {
 		if (words != null) {
+			DictSegment dict = getDictType(identify, type);
 			for (String word : words) {
 				if (word != null) {
-					// 批量屏蔽词条
-					dictionaryLoader.getDictSegments(identify).getMainDict().disableSegment(word.trim().toCharArray());
+					dict.disableSegment(word.trim().toCharArray());
 				}
 			}
 		}
