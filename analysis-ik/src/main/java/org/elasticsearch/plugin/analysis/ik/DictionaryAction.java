@@ -43,7 +43,12 @@ public class DictionaryAction extends BaseRestHandler {
     @Override
     protected RestChannelConsumer prepareRequest(RestRequest request, NodeClient client) throws IOException {
         String words = request.param("words");//添加的词
-        String identify = request.param("identify");//添加到哪个标识下
+        String identify0 = request.param("identify");//添加到哪个标识下
+        String index = request.param("index");
+        if(Strings.hasLength(identify0)){
+            identify0 = index + " || " + identify0;
+        }
+        String identify = identify0;
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();

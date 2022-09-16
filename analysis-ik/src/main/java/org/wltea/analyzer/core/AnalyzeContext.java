@@ -63,7 +63,7 @@ class AnalyzeContext {
     }
 
     String getIdentify(){
-    	return cfg.getCustomMainDictIdentify();
+    	return cfg.getIdentify();
 	}
     
     char[] getSegmentBuff(){

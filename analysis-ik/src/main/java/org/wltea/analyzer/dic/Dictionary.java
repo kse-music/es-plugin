@@ -21,9 +21,7 @@ public class Dictionary {
 
 	private Dictionary(Configuration cfg) {
         this.dictionaryLoader = new DictionaryLoader(cfg);
-        dictionaryLoader.loadDict();
 	}
-
 
 	/**
 	 * 词典初始化 由于IK Analyzer的词典采用Dictionary类的静态方法进行词典初始化
@@ -38,7 +36,6 @@ public class Dictionary {
 				}
 			}
 		}
-		singleton.dictionaryLoader.loadCustomDict(cfg.getCustomMainDictIdentify());
 	}
 
 	/**

@@ -20,35 +20,34 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * 词典配置
+ * 词典加载器配置
  *
  * @author DingHao
  * @since 2021/3/23 15:19
  */
-class DictionaryConfig {
+class DictionaryLoaderConfig {
 
-    private static final Logger logger = ESPluginLoggerFactory.getLogger(DictionaryConfig.class);
+    private static final Logger logger = ESPluginLoggerFactory.getLogger(DictionaryLoaderConfig.class);
 
     private static final String SEMICOLON = ";";
+    private static final String FILE_NAME = "IKAnalyzer.cfg.xml";
 
     static final String PATH_DIC_MAIN = "main.dic";
-    static final String PATH_DIC_SURNAME = "surname.dic";
-    static final String PATH_DIC_QUANTIFIER = "quantifier.dic";
-    static final String PATH_DIC_SUFFIX = "suffix.dic";
     static final String PATH_DIC_PREP = "preposition.dic";
+    static final String PATH_DIC_QUANTIFIER = "quantifier.dic";
     static final String PATH_DIC_STOP = "stopword.dic";
+    static final String PATH_DIC_SUFFIX = "suffix.dic";
+    static final String PATH_DIC_SURNAME = "surname.dic";
 
-    static final String FILE_NAME = "IKAnalyzer.cfg.xml";
     static final String EXT_DICT = "ext_dict";
     static final String REMOTE_EXT_DICT = "remote_ext_dict";
     static final String EXT_STOP = "ext_stopwords";
     static final String REMOTE_EXT_STOP = "remote_ext_stopwords";
 
     private final Properties props;
-
     private final String dictRoot;
 
-    DictionaryConfig(Configuration configuration) {
+    DictionaryLoaderConfig(Configuration configuration) {
         this.props = new Properties();
 
         Path conf_dir = configuration.getEnvironment().configFile().resolve(AnalysisIkPlugin.PLUGIN_NAME);

@@ -15,21 +15,24 @@ import org.elasticsearch.core.PathUtils;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.help.ESPluginLoggerFactory;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static org.wltea.analyzer.dic.DictionaryConfig.*;
+import static org.wltea.analyzer.dic.DictionaryLoaderConfig.*;
 
 /**
  * 管理所有词典的加载 包括远程词典
@@ -55,17 +58,36 @@ class DictionaryLoader {
 
     private final Configuration configuration;
 
-    private final DictionaryConfig dictionaryConfig;
+    private final DictionaryLoaderConfig dictionaryConfig;
 
     DictionaryLoader(Configuration cfg) {
         this.configuration = cfg;
         this.globalDict = new DictSegments();
-        this.dictionaryConfig = new DictionaryConfig(cfg);
-        this.customDict = new ConcurrentHashMap<>(2);
+        this.dictionaryConfig = new DictionaryLoaderConfig(cfg);
+        this.customDict = new HashMap<>(2);
+        loadDict();
+    }
+
+    private void loadDict(){
+        loadMainDict();
+        loadSurnameDict();
+        loadQuantifierDict();
+        loadSuffixDict();
+        loadPrepDict();
+        loadStopWordDict();
+
+        loadCustomDict(configuration.getIdentify());
+
+        if(isGlobalDict()){
+            startMonitor(configuration.getIdentify());
+        }
+        globalDict.setMainDict(_MainDict);
+        globalDict.setQuantifierDict(_QuantifierDict);
+        globalDict.setStopWords(_StopWords);
     }
 
     private boolean isGlobalDict(){
-        return configuration.getCustomMainDictIdentify().equals("default");
+        return configuration.getIdentify()==null;
     }
 
     DictSegments getDictSegments(String identify){
@@ -76,23 +98,8 @@ class DictionaryLoader {
         return customDict;
     }
 
-    void loadDict(){
-        loadMainDict();
-        loadSurnameDict();
-        loadQuantifierDict();
-        loadSuffixDict();
-        loadPrepDict();
-        loadStopWordDict();
-        if(isGlobalDict()){
-            startMonitor(configuration.getCustomMainDictIdentify());
-        }
-        globalDict.setMainDict(_MainDict);
-        globalDict.setQuantifierDict(_QuantifierDict);
-        globalDict.setStopWords(_StopWords);
-    }
-
     void loadCustomDict(String identify){
-        if(Strings.hasLength(identify) && !"default".equals(identify)){
+        if(Strings.hasLength(identify)){
             DictSegments dictSegments = new DictSegments();
             DictSegment customDictSegment = new DictSegment((char) 0);
             DictSegment stopDictSegment = new DictSegment((char) 0);
@@ -128,19 +135,14 @@ class DictionaryLoader {
      * 加载主词典及扩展词典
      */
     private void loadMainDict() {
-        // 建立一个主词典实例
         _MainDict = new DictSegment((char) 0);
-
-        // 读取主词典文件
-        Path file = dictionaryConfig.getDictPath(PATH_DIC_MAIN);
-        loadDictFile(_MainDict, file, false, "Main Dict");
+        loadDictFile(_MainDict, PATH_DIC_MAIN, false);
         // 加载扩展词典
         loadExtDict();
         // 加载远程自定义词库
         if(isGlobalDict()){
-            loadRemoteDict(REMOTE_EXT_DICT,configuration.getCustomMainDictIdentify(),_MainDict);
+            loadRemoteDict(REMOTE_EXT_DICT,configuration.getIdentify(),_MainDict);
         }
-
     }
 
     /**
@@ -153,7 +155,7 @@ class DictionaryLoader {
             // 读取扩展词典文件
             logger.info("[Dict Loading] " + extDictName);
             Path file = PathUtils.get(extDictName);
-            loadDictFile(_MainDict, file, false, "Extra Dict");
+            loadDictFile(_MainDict, file, false);
         }
     }
 
@@ -184,25 +186,20 @@ class DictionaryLoader {
      * 加载用户扩展的停止词词典
      */
     private void loadStopWordDict() {
-        // 建立主词典实例
         _StopWords = new DictSegment((char) 0);
-
-        // 读取主词典文件
-        Path file = dictionaryConfig.getDictPath(PATH_DIC_STOP);
-        loadDictFile(_StopWords, file, false, "Main Stopwords");
+        loadDictFile(_StopWords, PATH_DIC_STOP, false);
 
         // 加载扩展停止词典
         List<String> extStopWordDictFiles = dictionaryConfig.getDictFiles(EXT_STOP,true);
         for (String extStopWordDictName : extStopWordDictFiles) {
             logger.info("[Dict Loading] " + extStopWordDictName);
             // 读取扩展词典文件
-            file = PathUtils.get(extStopWordDictName);
-            loadDictFile(_StopWords, file, false, "Extra Stopwords");
+            loadDictFile(_StopWords, PathUtils.get(extStopWordDictName), false);
         }
 
         // 加载远程停用词典
         if(isGlobalDict()){
-            loadRemoteDict(REMOTE_EXT_STOP,configuration.getCustomMainDictIdentify(),_StopWords);
+            loadRemoteDict(REMOTE_EXT_STOP,configuration.getIdentify(),_StopWords);
         }
 
     }
@@ -263,39 +260,33 @@ class DictionaryLoader {
         });
     }
 
-    /**
-     * 加载量词词典
-     */
     private void loadQuantifierDict() {
-        // 建立一个量词典实例
         _QuantifierDict = new DictSegment((char) 0);
-        // 读取量词词典文件
-        Path file = dictionaryConfig.getDictPath(PATH_DIC_QUANTIFIER);
-        loadDictFile(_QuantifierDict, file, false, "Quantifier");
+        loadDictFile(_QuantifierDict, PATH_DIC_QUANTIFIER, false);
 
     }
 
     private void loadSurnameDict() {
         DictSegment _SurnameDict = new DictSegment((char) 0);
-        Path file = dictionaryConfig.getDictPath(PATH_DIC_SURNAME);
-        loadDictFile(_SurnameDict, file, true, "Surname");
+        loadDictFile(_SurnameDict, PATH_DIC_SURNAME, true);
     }
 
     private void loadSuffixDict() {
         DictSegment _SuffixDict = new DictSegment((char) 0);
-        Path file = dictionaryConfig.getDictPath(PATH_DIC_SUFFIX);
-        loadDictFile(_SuffixDict, file, true, "Suffix");
+        loadDictFile(_SuffixDict, PATH_DIC_SUFFIX, true);
     }
 
     private void loadPrepDict() {
         DictSegment _PrepDict = new DictSegment((char) 0);
-        Path file = dictionaryConfig.getDictPath(PATH_DIC_PREP);
-        loadDictFile(_PrepDict, file, true, "Preposition");
+        loadDictFile(_PrepDict, PATH_DIC_PREP, true);
     }
 
-    private void loadDictFile(DictSegment dict, Path file, boolean critical, String name) {
-        try (InputStream is = new FileInputStream(file.toFile())) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8), 512);
+    private void loadDictFile(DictSegment dict, String file, boolean critical) {
+        loadDictFile(dict, dictionaryConfig.getDictPath(file), critical);
+    }
+
+    private void loadDictFile(DictSegment dict, Path file, boolean critical) {
+        try (BufferedReader br = Files.newBufferedReader(file)) {
             String word = br.readLine();
             if (word != null) {
                 if (word.startsWith("\uFEFF"))
@@ -307,15 +298,14 @@ class DictionaryLoader {
                 }
             }
         } catch (FileNotFoundException e) {
-            logger.error("ik-analyzer: " + name + " not found", e);
-            if (critical) throw new RuntimeException("ik-analyzer: " + name + " not found!!!", e);
+            logger.error("ik-analyzer: " + file.getFileName() + " not found", e);
+            if (critical) throw new RuntimeException("ik-analyzer: " + file.getFileName() + " not found!!!", e);
         } catch (IOException e) {
-            logger.error("ik-analyzer: " + name + " loading failed", e);
+            logger.error("ik-analyzer: " + file.getFileName() + " loading failed", e);
         }
     }
 
-
-    public void sendGet(String location, Consumer<CloseableHttpResponse> consumer){
+    private void sendGet(String location, Consumer<CloseableHttpResponse> consumer){
         send(new HttpGet(location),consumer);
     }
 

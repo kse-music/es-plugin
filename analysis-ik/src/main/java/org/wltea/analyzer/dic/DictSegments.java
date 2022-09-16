@@ -46,8 +46,4 @@ class DictSegments {
         return stopWords;
     }
 
-
-
-
-
 }

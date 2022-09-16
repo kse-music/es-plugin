@@ -12,7 +12,7 @@ public class IkAnalyzerProvider extends AbstractIndexAnalyzerProvider<IKAnalyzer
 
     private IkAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
         super(indexSettings, name, settings);
-        this.analyzer = new IKAnalyzer(new Configuration(env, settings));
+        this.analyzer = new IKAnalyzer(new Configuration(index().getName(),env, settings));
     }
 
     public static IkAnalyzerProvider getIkAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
