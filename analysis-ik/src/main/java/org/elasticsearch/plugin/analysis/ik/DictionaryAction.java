@@ -45,7 +45,7 @@ public class DictionaryAction extends BaseRestHandler {
         Map<String, Object> sourceAsMap = XContentHelper.convertToMap(request.requiredContent(), false, request.getXContentType()).v2();
         String words = sourceAsMap.get("words").toString();//添加的词
         String type = sourceAsMap.get("type").toString();//主词典 or 停用词
-        String identify = request.param("index") + " || " + sourceAsMap.get("identify");//添加到哪个标识下
+        String identify = request.param("index");
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();

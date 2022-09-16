@@ -1,6 +1,5 @@
 package org.wltea.analyzer.cfg;
 
-import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.core.PathUtils;
@@ -24,17 +23,14 @@ public class Configuration {
 	//是否启用小写处理
 	private final boolean enableLowercase;
 
-	private String identify;
+	private final String identify;
 
 	@Inject
 	public Configuration(String indexName,Environment env,Settings settings) {
 		this.environment = env;
 		this.enableLowercase = settings.getAsBoolean("enable_lowercase", true);
         this.enableRemoteDict = settings.getAsBoolean("enable_remote_dict", true);
-        this.identify = settings.get("identify");
-		if(Strings.hasLength(identify)){
-			this.identify = indexName + " || " + identify;
-		}
+		this.identify = indexName;//默认每个索引下一个性化词典
 		Dictionary.initial(this);
 	}
 
