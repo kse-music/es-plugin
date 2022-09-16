@@ -10,18 +10,19 @@ public class IkAnalyzerProvider extends AbstractIndexAnalyzerProvider<IKAnalyzer
 
     private final IKAnalyzer analyzer;
 
-    public IkAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings, boolean useSmart) {
+    private IkAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
         super(indexSettings, name, settings);
-        Configuration configuration = new Configuration(env, settings).useSmart(useSmart);
-        this.analyzer = new IKAnalyzer(configuration);
-    }
-
-    public static IkAnalyzerProvider getIkSmartAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
-        return new IkAnalyzerProvider(indexSettings, env, name, settings, true);
+        this.analyzer = new IKAnalyzer(new Configuration(env, settings));
     }
 
     public static IkAnalyzerProvider getIkAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
-        return new IkAnalyzerProvider(indexSettings, env, name, settings, false);
+        return new IkAnalyzerProvider(indexSettings, env, name, settings);
+    }
+
+    public static IkAnalyzerProvider getIkSmartAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
+        IkAnalyzerProvider ikAnalyzerProvider = new IkAnalyzerProvider(indexSettings, env, name, settings);
+        ikAnalyzerProvider.analyzer.getConfiguration().useSmart();
+        return ikAnalyzerProvider;
     }
 
     @Override

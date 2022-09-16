@@ -13,7 +13,6 @@ import java.nio.file.Path;
 public class Configuration {
 
 	private final Environment environment;
-	private final Settings settings;
 
 	//是否启用智能分词
 	private boolean useSmart;
@@ -29,9 +28,7 @@ public class Configuration {
 	@Inject
 	public Configuration(Environment env,Settings settings) {
 		this.environment = env;
-		this.settings=settings;
 
-		this.useSmart = settings.getAsBoolean("use_smart", false);
 		this.enableLowercase = settings.getAsBoolean("enable_lowercase", true);
         this.enableRemoteDict = settings.getAsBoolean("enable_remote_dict", true);
         this.customMainDictIdentify = settings.get("custom_main_dict_identify", "default");
@@ -39,7 +36,6 @@ public class Configuration {
 		Dictionary.initial(this);
 
 	}
-
 
 	public Path getConfigInPluginDir() {
 		return PathUtils.get(new File(AnalysisIkPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent(), "config").toAbsolutePath();
@@ -49,17 +45,12 @@ public class Configuration {
 		return useSmart;
 	}
 
-	public Configuration useSmart(boolean useSmart) {
-		this.useSmart = useSmart;
-		return this;
+	public void useSmart() {
+		this.useSmart = true;
 	}
 
 	public Environment getEnvironment() {
 		return environment;
-	}
-
-	public Settings getSettings() {
-		return settings;
 	}
 
 	public boolean isEnableRemoteDict() {

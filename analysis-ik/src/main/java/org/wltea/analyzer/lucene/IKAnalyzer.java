@@ -1,7 +1,6 @@
 package org.wltea.analyzer.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Tokenizer;
 import org.wltea.analyzer.cfg.Configuration;
 
 /**
@@ -31,14 +30,13 @@ public final class IKAnalyzer extends Analyzer{
         this.configuration = configuration;
 	}
 
-	/**
-	 * 重载Analyzer接口，构造分词组件
-	 */
+	public Configuration getConfiguration() {
+		return configuration;
+	}
+
 	@Override
 	protected TokenStreamComponents createComponents(String fieldName) {
-        Tokenizer _IKTokenizer = new IKTokenizer(configuration);
-
-		return new TokenStreamComponents(_IKTokenizer);
+		return new TokenStreamComponents(new IKTokenizer(configuration));
     }
 
 }

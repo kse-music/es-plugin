@@ -11,22 +11,19 @@ public class IkTokenizerFactory extends AbstractTokenizerFactory {
 
     private final Configuration configuration;
 
-    public IkTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
+    private IkTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
         super(indexSettings, settings, name);
-        configuration = new Configuration(env, settings);
+        this.configuration = new Configuration(env, settings);
     }
 
     public static IkTokenizerFactory getIkTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
-        return new IkTokenizerFactory(indexSettings, env, name, settings).setSmart(false);
+        return new IkTokenizerFactory(indexSettings, env, name, settings);
     }
 
     public static IkTokenizerFactory getIkSmartTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
-        return new IkTokenizerFactory(indexSettings, env, name, settings).setSmart(true);
-    }
-
-    public IkTokenizerFactory setSmart(boolean smart) {
-        this.configuration.useSmart(smart);
-        return this;
+        IkTokenizerFactory ikTokenizerFactory = new IkTokenizerFactory(indexSettings, env, name, settings);
+        ikTokenizerFactory.configuration.useSmart();
+        return ikTokenizerFactory;
     }
 
     @Override
