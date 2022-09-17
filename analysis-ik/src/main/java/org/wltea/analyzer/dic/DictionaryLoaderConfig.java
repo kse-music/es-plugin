@@ -6,10 +6,7 @@ import org.elasticsearch.plugin.analysis.ik.AnalysisIkPlugin;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.help.ESPluginLoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +55,7 @@ class DictionaryLoaderConfig {
             logger.info("try load config from {}", configFile);
             input = new FileInputStream(configFile.toFile());
         } catch (FileNotFoundException e) {
-            conf_dir = configuration.getConfigInPluginDir();
+            conf_dir = PathUtils.get(new File(AnalysisIkPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent(), "config").toAbsolutePath();
             configFile = conf_dir.resolve(FILE_NAME);
             try {
                 logger.info("try load config from {}", configFile);

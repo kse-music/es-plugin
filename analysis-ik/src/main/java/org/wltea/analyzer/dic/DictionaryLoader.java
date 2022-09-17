@@ -76,8 +76,6 @@ class DictionaryLoader {
         loadPrepDict();
         loadStopWordDict();
 
-        loadCustomDict(configuration.getIdentify());
-
         if(isGlobalDict()){
             startMonitor(configuration.getIdentify());
         }

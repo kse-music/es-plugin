@@ -2,13 +2,8 @@ package org.wltea.analyzer.cfg;
 
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.core.PathUtils;
 import org.elasticsearch.env.Environment;
-import org.elasticsearch.plugin.analysis.ik.AnalysisIkPlugin;
 import org.wltea.analyzer.dic.Dictionary;
-
-import java.io.File;
-import java.nio.file.Path;
 
 public class Configuration {
 
@@ -32,10 +27,6 @@ public class Configuration {
         this.enableRemoteDict = settings.getAsBoolean("enable_remote_dict", true);
 		this.identify = indexName;//默认每个索引下一个性化词典
 		Dictionary.initial(this);
-	}
-
-	public Path getConfigInPluginDir() {
-		return PathUtils.get(new File(AnalysisIkPlugin.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent(), "config").toAbsolutePath();
 	}
 
 	public boolean isUseSmart() {
